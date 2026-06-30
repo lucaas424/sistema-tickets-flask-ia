@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Panel principal</h1>
+        <p class="subtitle">
+            Bienvenido, {{ current_user.nombre }}. Este es el resumen general del sistema de tickets.
+        </p>
+    </div>
+
+    <div class="header-actions">
+        <a href="{{ url_for('tickets.crear_ticket') }}" class="btn btn-primary">+ Nuevo ticket</a>
+        <a href="{{ url_for('ai.prediccion_prioridad') }}" class="btn btn-secondary">Sugerir prioridad con IA</a>
+    </div>
+</div>
+
+<div class="grid-cards">
+    <div class="card">
+        <div class="metric-number">{{ total_tickets }}</div>
+        <div class="metric-label">Tickets totales</div>
+    </div>
+
+    <div class="card">
+        <div class="metric-number">{{ abiertos }}</div>
+        <div class="metric-label">Abiertos</div>
+    </div>
+
+    <div class="card">
+        <div class="metric-number">{{ en_proceso }}</div>
+        <div class="metric-label">En proceso</div>
+    </div>
+
+    <div class="card">
+        <div class="metric-number">{{ cerrados }}</div>
+        <div class="metric-label">Cerrados</div>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>Acciones rápidas</h2>
+    <p class="subtitle">
+        Desde este panel podés registrar nuevos tickets, consultar el listado general o usar la predicción de prioridad.
+    </p>
+
+    <div class="header-actions">
+        <a href="{{ url_for('tickets.crear_ticket') }}" class="btn btn-primary">Registrar ticket</a>
+        <a href="{{ url_for('tickets.listar_tickets') }}" class="btn btn-light">Ver tickets</a>
+        <a href="{{ url_for('ai.prediccion_prioridad') }}" class="btn btn-secondary">Predicción IA</a>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>Últimos tickets registrados</h2>
+
+    {% if ultimos_tickets %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Categoría</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in ultimos_tickets %}
+                    <tr>
+                        <td>#{{ ticket.id }}</td>
+                        <td>{{ ticket.titulo }}</td>
+                        <td>{{ ticket.categoria }}</td>
+                        <td>
+                            <span class="badge badge-{{ ticket.prioridad|lower }}">
+                                {{ ticket.prioridad }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-{{ ticket.estado|lower|replace(' ', '-') }}">
+                                {{ ticket.estado }}
+                            </span>
+                        </td>
+                        <td>{{ ticket.fecha_creacion.strftime("%d/%m/%Y") }}</td>
+                        <td>
+                            <a href="{{ url_for('tickets.detalle_ticket', id=ticket.id) }}" class="btn btn-small btn-light">
+                                Ver detalle
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            Todavía no hay tickets registrados. Podés crear el primero desde el botón “Nuevo ticket”.
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

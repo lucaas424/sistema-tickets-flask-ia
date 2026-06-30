@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Crear cuenta · TicketFlow{% endblock %}
+
+{% block content %}
+<section class="auth-wrapper">
+    <div class="auth-card">
+        <h1>Crear cuenta</h1>
+        <p class="subtitle">Registrá un usuario administrador para operar el prototipo.</p>
+
+        <form method="POST">
+            <label>Nombre</label>
+            <input type="text" name="nombre" placeholder="Ej: Lucas Mariano" required>
+
+            <label>Email</label>
+            <input type="email" name="email" placeholder="usuario@empresa.com" required>
+
+            <label>Contraseña</label>
+            <input type="password" name="password" placeholder="Mínimo 6 caracteres" required>
+
+            <button type="submit" class="btn btn-primary">Crear cuenta</button>
+        </form>
+
+        <p class="form-note">
+            ¿Ya tenés cuenta?
+            <a href="{{ url_for('auth.login') }}">Iniciar sesión</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

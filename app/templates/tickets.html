@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Tickets{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Listado de tickets</h1>
+        <p class="subtitle">
+            Consulta general de tickets registrados, con filtros por estado, prioridad y búsqueda por título.
+        </p>
+    </div>
+
+    <div class="header-actions">
+        <a href="{{ url_for('tickets.crear_ticket') }}" class="btn btn-primary">+ Nuevo ticket</a>
+        <a href="{{ url_for('tickets.dashboard') }}" class="btn btn-light">Volver al panel</a>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>Filtros de búsqueda</h2>
+
+    <form method="GET" action="{{ url_for('tickets.listar_tickets') }}" class="form-grid">
+        <div>
+            <label>Buscar por título</label>
+            <input type="text" name="busqueda" value="{{ busqueda }}" placeholder="Ej: impresora, acceso, red">
+        </div>
+
+        <div>
+            <label>Estado</label>
+            <select name="estado">
+                <option value="">Todos</option>
+                <option value="Abierto" {% if estado == "Abierto" %}selected{% endif %}>Abierto</option>
+                <option value="En proceso" {% if estado == "En proceso" %}selected{% endif %}>En proceso</option>
+                <option value="Resuelto" {% if estado == "Resuelto" %}selected{% endif %}>Resuelto</option>
+                <option value="Cerrado" {% if estado == "Cerrado" %}selected{% endif %}>Cerrado</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Prioridad</label>
+            <select name="prioridad">
+                <option value="">Todas</option>
+                <option value="Baja" {% if prioridad == "Baja" %}selected{% endif %}>Baja</option>
+                <option value="Media" {% if prioridad == "Media" %}selected{% endif %}>Media</option>
+                <option value="Alta" {% if prioridad == "Alta" %}selected{% endif %}>Alta</option>
+            </select>
+        </div>
+
+        <div style="display: flex; align-items: end; gap: 10px;">
+            <button type="submit" class="btn btn-primary">Aplicar filtros</button>
+            <a href="{{ url_for('tickets.listar_tickets') }}" class="btn btn-light">Limpiar</a>
+        </div>
+    </form>
+</div>
+
+<div class="panel">
+    <h2>Tickets registrados</h2>
+
+    {% if tickets %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Categoría</th>
+                        <th>Prioridad</th>
+                        <th>Impacto</th>
+                        <th>Estado</th>
+                        <th>Afecta servicio</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for ticket in tickets %}
+                    <tr>
+                        <td>#{{ ticket.id }}</td>
+                        <td>{{ ticket.titulo }}</td>
+                        <td>{{ ticket.categoria }}</td>
+                        <td>
+                            <span class="badge badge-{{ ticket.prioridad|lower }}">
+                                {{ ticket.prioridad }}
+                            </span>
+                        </td>
+                        <td>{{ ticket.impacto }}</td>
+                        <td>
+                            <span class="badge badge-{{ ticket.estado|lower|replace(' ', '-') }}">
+                                {{ ticket.estado }}
+                            </span>
+                        </td>
+                        <td> {% if ticket.afecta_servicio %}
+    Sí
+{% else %}
+    No
+{% endif %}</td>
+                        <td>{{ ticket.fecha_creacion.strftime("%d/%m/%Y") }}</td>
+                        <td>
+                            <div class="actions">
+                                <a href="{{ url_for('tickets.detalle_ticket', id=ticket.id) }}" class="btn btn-small btn-light">Ver</a>
+                                <a href="{{ url_for('tickets.editar_ticket', id=ticket.id) }}" class="btn btn-small btn-secondary">Editar</a>
+
+                                <form action="{{ url_for('tickets.eliminar_ticket', id=ticket.id) }}" method="POST" class="inline-form">
+                                    <button type="submit" class="btn btn-small btn-danger"
+                                            onclick="return confirm('¿Seguro que querés eliminar este ticket? Esta acción no se puede deshacer.')">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            No se encontraron tickets con los filtros seleccionados.
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

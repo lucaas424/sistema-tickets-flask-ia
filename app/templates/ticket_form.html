@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if modo == "crear" %}Nuevo ticket{% else %}Editar ticket{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>{% if modo == "crear" %}Nuevo ticket{% else %}Editar ticket{% endif %}</h1>
+        <p class="subtitle">
+            {% if modo == "crear" %}
+                Registrá una nueva solicitud de soporte técnico.
+            {% else %}
+                Modificá los datos del ticket seleccionado.
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="header-actions">
+        <a href="{{ url_for('tickets.listar_tickets') }}" class="btn btn-light">Volver al listado</a>
+    </div>
+</div>
+
+<div class="panel">
+    <form method="POST" class="form-grid">
+
+        <div class="form-full">
+            <label>Título *</label>
+            <input type="text" name="titulo" required
+                   value="{{ ticket.titulo if ticket else '' }}"
+                   placeholder="Ej: No puedo acceder al sistema">
+        </div>
+
+        <div class="form-full">
+            <label>Descripción *</label>
+            <textarea name="descripcion" required placeholder="Describí brevemente el problema o solicitud">{{ ticket.descripcion if ticket else '' }}</textarea>
+        </div>
+
+        <div>
+            <label>Categoría *</label>
+            <select name="categoria" required>
+                <option value="">Seleccionar</option>
+                {% set categoria_actual = ticket.categoria if ticket else '' %}
+                <option value="Hardware" {% if categoria_actual == "Hardware" %}selected{% endif %}>Hardware</option>
+                <option value="Software" {% if categoria_actual == "Software" %}selected{% endif %}>Software</option>
+                <option value="Red" {% if categoria_actual == "Red" %}selected{% endif %}>Red</option>
+                <option value="Accesos" {% if categoria_actual == "Accesos" %}selected{% endif %}>Accesos</option>
+                <option value="Impresoras" {% if categoria_actual == "Impresoras" %}selected{% endif %}>Impresoras</option>
+                <option value="Otro" {% if categoria_actual == "Otro" %}selected{% endif %}>Otro</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Prioridad *</label>
+            <select name="prioridad" required>
+                <option value="">Seleccionar</option>
+                {% set prioridad_actual = ticket.prioridad if ticket else '' %}
+                <option value="Baja" {% if prioridad_actual == "Baja" %}selected{% endif %}>Baja</option>
+                <option value="Media" {% if prioridad_actual == "Media" %}selected{% endif %}>Media</option>
+                <option value="Alta" {% if prioridad_actual == "Alta" %}selected{% endif %}>Alta</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Impacto *</label>
+            <select name="impacto" required>
+                <option value="">Seleccionar</option>
+                {% set impacto_actual = ticket.impacto if ticket else '' %}
+                <option value="Bajo" {% if impacto_actual == "Bajo" %}selected{% endif %}>Bajo</option>
+                <option value="Medio" {% if impacto_actual == "Medio" %}selected{% endif %}>Medio</option>
+                <option value="Alto" {% if impacto_actual == "Alto" %}selected{% endif %}>Alto</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Urgencia *</label>
+            <select name="urgencia" required>
+                <option value="">Seleccionar</option>
+                {% set urgencia_actual = ticket.urgencia if ticket else '' %}
+                <option value="Baja" {% if urgencia_actual == "Baja" %}selected{% endif %}>Baja</option>
+                <option value="Media" {% if urgencia_actual == "Media" %}selected{% endif %}>Media</option>
+                <option value="Alta" {% if urgencia_actual == "Alta" %}selected{% endif %}>Alta</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Usuarios afectados</label>
+            <input type="number" name="usuarios_afectados" min="0"
+                   value="{{ ticket.usuarios_afectados if ticket else 1 }}">
+        </div>
+
+        <div>
+            <label>Afecta servicio</label>
+            {% set afecta_actual = ticket.afecta_servicio if ticket else 'No' %}
+            <select name="afecta_servicio">
+                <option value="No" {% if afecta_actual == "No" %}selected{% endif %}>No</option>
+                <option value="Sí" {% if afecta_actual == "Sí" %}selected{% endif %}>Sí</option>
+            </select>
+        </div>
+
+        {% if modo == "editar" %}
+        <div>
+            <label>Estado</label>
+            <select name="estado">
+                {% set estado_actual = ticket.estado %}
+                <option value="Abierto" {% if estado_actual == "Abierto" %}selected{% endif %}>Abierto</option>
+                <option value="En proceso" {% if estado_actual == "En proceso" %}selected{% endif %}>En proceso</option>
+                <option value="Resuelto" {% if estado_actual == "Resuelto" %}selected{% endif %}>Resuelto</option>
+                <option value="Cerrado" {% if estado_actual == "Cerrado" %}selected{% endif %}>Cerrado</option>
+            </select>
+        </div>
+        {% endif %}
+
+        <div class="form-full help-box">
+            Los campos de impacto, urgencia, usuarios afectados y afectación del servicio también se usan para la sugerencia de prioridad con IA.
+        </div>
+
+        <div class="form-full header-actions">
+            <button type="submit" class="btn btn-primary">
+                {% if modo == "crear" %}Guardar ticket{% else %}Guardar cambios{% endif %}
+            </button>
+
+            <a href="{{ url_for('tickets.listar_tickets') }}" class="btn btn-light">Cancelar</a>
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}

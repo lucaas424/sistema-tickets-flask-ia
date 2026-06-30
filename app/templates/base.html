@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}TicketFlow{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="brand-icon">TF</span>
+            <span>TicketFlow</span>
+        </div>
+
+        <div class="nav-links">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('tickets.dashboard') }}">Panel</a>
+                <a href="{{ url_for('tickets.listar_tickets') }}">Tickets</a>
+                <a href="{{ url_for('tickets.crear_ticket') }}">Nuevo ticket</a>
+                <a href="{{ url_for('ai.prediccion_prioridad') }}">IA Prioridad</a>
+                <span class="user-pill">{{ current_user.nombre }}</span>
+                <a class="logout-link" href="{{ url_for('auth.logout') }}">Salir</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Iniciar sesión</a>
+                <a class="nav-button" href="{{ url_for('auth.register') }}">Crear cuenta</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="container">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <section class="messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+    <footer class="footer">
+        TicketFlow · Prototipo funcional en Flask con CRUD, login seguro e integración de IA
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Detalle del ticket{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Ticket #{{ ticket.id }}</h1>
+        <p class="subtitle">
+            Detalle completo de la solicitud registrada.
+        </p>
+    </div>
+
+    <div class="header-actions">
+        <a href="{{ url_for('tickets.editar_ticket', id=ticket.id) }}" class="btn btn-secondary">Editar ticket</a>
+        <a href="{{ url_for('tickets.listar_tickets') }}" class="btn btn-light">Volver al listado</a>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>{{ ticket.titulo }}</h2>
+    <p class="subtitle">{{ ticket.descripcion }}</p>
+
+    <div class="detail-grid">
+        <div class="detail-item">
+            <span class="detail-label">Categoría</span>
+            <span class="detail-value">{{ ticket.categoria }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Prioridad</span>
+            <span class="badge badge-{{ ticket.prioridad|lower }}">{{ ticket.prioridad }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Estado</span>
+            <span class="badge badge-{{ ticket.estado|lower|replace(' ', '-') }}">{{ ticket.estado }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Impacto</span>
+            <span class="detail-value">{{ ticket.impacto }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Urgencia</span>
+            <span class="detail-value">{{ ticket.urgencia }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Usuarios afectados</span>
+            <span class="detail-value">{{ ticket.usuarios_afectados }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Afecta servicio</span>
+            <span class="detail-value">{% if ticket.afecta_servicio %}
+    Sí
+{% else %}
+    No
+{% endif %}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Creado por</span>
+            <span class="detail-value">{{ ticket.creador.nombre }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Fecha de creación</span>
+            <span class="detail-value">{{ ticket.fecha_creacion.strftime("%d/%m/%Y %H:%M") }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Última actualización</span>
+            <span class="detail-value">{{ ticket.fecha_actualizacion.strftime("%d/%m/%Y %H:%M") }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Fecha de cierre</span>
+            <span class="detail-value">
+                {% if ticket.fecha_cierre %}
+                    {{ ticket.fecha_cierre.strftime("%d/%m/%Y %H:%M") }}
+                {% else %}
+                    Sin cierre registrado
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>Acciones del ticket</h2>
+
+    <div class="header-actions">
+        {% if ticket.estado != "Cerrado" %}
+            <form action="{{ url_for('tickets.cerrar_ticket', id=ticket.id) }}" method="POST" class="inline-form">
+                <button type="submit" class="btn btn-primary"
+                        onclick="return confirm('¿Confirmás el cierre de este ticket?')">
+                    Cerrar ticket
+                </button>
+            </form>
+        {% else %}
+            <div class="alert alert-info">
+                Este ticket ya se encuentra cerrado y solo queda disponible para consulta.
+            </div>
+        {% endif %}
+
+        <form action="{{ url_for('tickets.eliminar_ticket', id=ticket.id) }}" method="POST" class="inline-form">
+            <button type="submit" class="btn btn-danger"
+                    onclick="return confirm('¿Seguro que querés eliminar este ticket? Esta acción no se puede deshacer.')">
+                Eliminar ticket
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

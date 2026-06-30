@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Predicción IA{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Sugerencia de prioridad con IA</h1>
+        <p class="subtitle">
+            El modelo estima una prioridad inicial para el ticket usando impacto, urgencia,
+            cantidad de usuarios afectados y afectación del servicio.
+        </p>
+    </div>
+
+    <div class="header-actions">
+        <a href="{{ url_for('tickets.dashboard') }}" class="btn btn-light">Volver al panel</a>
+        <a href="{{ url_for('tickets.crear_ticket') }}" class="btn btn-primary">Crear ticket</a>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>Datos para la predicción</h2>
+
+    <form method="POST" class="form-grid">
+        <div>
+            <label>Impacto *</label>
+            <select name="impacto" required>
+                <option value="">Seleccionar</option>
+                <option value="Bajo" {% if datos.impacto == "Bajo" %}selected{% endif %}>Bajo</option>
+                <option value="Medio" {% if datos.impacto == "Medio" %}selected{% endif %}>Medio</option>
+                <option value="Alto" {% if datos.impacto == "Alto" %}selected{% endif %}>Alto</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Urgencia *</label>
+            <select name="urgencia" required>
+                <option value="">Seleccionar</option>
+                <option value="Baja" {% if datos.urgencia == "Baja" %}selected{% endif %}>Baja</option>
+                <option value="Media" {% if datos.urgencia == "Media" %}selected{% endif %}>Media</option>
+                <option value="Alta" {% if datos.urgencia == "Alta" %}selected{% endif %}>Alta</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Usuarios afectados *</label>
+            <input type="number" name="usuarios_afectados" min="0" required
+                   value="{{ datos.usuarios_afectados }}"
+                   placeholder="Ej: 15">
+        </div>
+
+        <div>
+            <label>Afecta servicio</label>
+            <select name="afecta_servicio">
+                <option value="No" {% if datos.afecta_servicio == "No" %}selected{% endif %}>No</option>
+                <option value="Sí" {% if datos.afecta_servicio == "Sí" %}selected{% endif %}>Sí</option>
+            </select>
+        </div>
+
+        <div class="form-full help-box">
+            Esta función utiliza un modelo de regresión logística entrenado previamente con scikit-learn
+            y guardado con joblib. La aplicación carga el modelo al iniciar y devuelve la predicción en tiempo real.
+        </div>
+
+        <div class="form-full header-actions">
+            <button type="submit" class="btn btn-primary">Predecir prioridad</button>
+            <a href="{{ url_for('ai.prediccion_prioridad') }}" class="btn btn-light">Limpiar formulario</a>
+        </div>
+    </form>
+</div>
+
+{% if resultado %}
+<div class="panel result-panel">
+    <h2>Resultado de la predicción</h2>
+
+    <div class="ai-result">
+        <p class="subtitle">Prioridad sugerida para el ticket</p>
+        <div class="ai-priority badge badge-{{ resultado|lower }}">
+            {{ resultado }}
+        </div>
+
+        {% if confianza %}
+            <p class="subtitle">Confianza estimada: {{ confianza }}%</p>
+        {% endif %}
+    </div>
+
+    {% if probabilidades %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Prioridad</th>
+                        <th>Probabilidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for clase, valor in probabilidades.items() %}
+                    <tr>
+                        <td>{{ clase }}</td>
+                        <td>{{ valor }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    <div class="help-box">
+        La sugerencia puede utilizarse como apoyo inicial para clasificar el ticket antes de guardarlo en el sistema.
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
