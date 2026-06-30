@@ -8,6 +8,7 @@ from joblib import load
 
 from app.models import db, User
 
+
 bcrypt = Bcrypt()
 login_manager = LoginManager()
 
@@ -20,16 +21,19 @@ def load_user(user_id):
 def create_app():
     app = Flask(__name__)
 
-    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "clave_temporal_desarrollo")
+    app.config["SECRET_KEY"] = os.environ.get(
+        "SECRET_KEY",
+        "clave_temporal_desarrollo"
+    )
 
-   db_url = os.environ.get("DATABASE_URL", "sqlite:///tickets.db")
+    db_url = os.environ.get("DATABASE_URL", "sqlite:///tickets.db")
 
-if db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql+psycopg://", 1)
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql+psycopg://", 1)
 
-if db_url.startswith("postgresql://"):
-    db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
-    
+    if db_url.startswith("postgresql://"):
+        db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
+
     app.config["SQLALCHEMY_DATABASE_URI"] = db_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
