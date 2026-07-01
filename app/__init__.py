@@ -61,7 +61,9 @@ def create_app():
     app.register_blueprint(ai_bp)
 
     with app.app_context():
-        db.create_all()
+    if os.environ.get("RESET_DATABASE", "false").lower() == "true":
+        db.drop_all()
+    db.create_all()
 
     @app.route("/")
     def home():
