@@ -30,18 +30,22 @@ class Ticket(db.Model):
     __tablename__ = "tickets"
 
     id = db.Column(db.Integer, primary_key=True)
+
     titulo = db.Column(db.String(120), nullable=False)
     descripcion = db.Column(db.Text, nullable=False)
     categoria = db.Column(db.String(50), nullable=False)
     prioridad = db.Column(db.String(20), nullable=False)
+
     estado = db.Column(db.String(30), nullable=False, default="Abierto")
 
-    impacto = db.Column(db.Integer, nullable=False, default=3)
-    urgencia = db.Column(db.Integer, nullable=False, default=3)
-    usuarios_afectados = db.Column(db.Integer, nullable=False, default=1)
+    impacto = db.Column(db.String(20), nullable=False)
+    urgencia = db.Column(db.String(20), nullable=False)
+
+    usuarios_afectados = db.Column(db.Integer, nullable=False, default=0)
     afecta_servicio = db.Column(db.Boolean, nullable=False, default=False)
 
     comentario_cierre = db.Column(db.Text, nullable=True)
+
     fecha_creacion = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     fecha_actualizacion = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     fecha_cierre = db.Column(db.DateTime, nullable=True)
