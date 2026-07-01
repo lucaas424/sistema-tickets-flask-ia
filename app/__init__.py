@@ -8,7 +8,6 @@ from joblib import load
 
 from app.models import db, User
 
-
 bcrypt = Bcrypt()
 login_manager = LoginManager()
 
@@ -61,9 +60,9 @@ def create_app():
     app.register_blueprint(ai_bp)
 
     with app.app_context():
-    if os.environ.get("RESET_DATABASE", "false").lower() == "true":
-        db.drop_all()
-    db.create_all()
+        if os.environ.get("RESET_DATABASE", "false").lower() == "true":
+            db.drop_all()
+        db.create_all()
 
     @app.route("/")
     def home():
